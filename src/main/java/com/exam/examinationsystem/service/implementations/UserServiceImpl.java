@@ -1,5 +1,6 @@
 package com.exam.examinationsystem.service.implementations;
 
+import com.exam.examinationsystem.helper.UserFoundException;
 import com.exam.examinationsystem.models.User;
 import com.exam.examinationsystem.models.UserRole;
 import com.exam.examinationsystem.repository.RoleRepository;
@@ -10,9 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,10 +29,7 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user, Set<UserRole> userRoles) throws Exception {
 
         User local = this.userRepository.findByUsername(user.getUsername());
-        if (local!=null) {
-            System.out.println("User is Already registered");
-            throw new Exception("User already registered");
-        } else {
+
             //create User
             for (UserRole ur:userRoles) {
                 roleRepository.save(ur.getRole());
@@ -41,7 +37,6 @@ public class UserServiceImpl implements UserService {
 
             user.getUserRoles().addAll(userRoles);
             local = this.userRepository.save(user);
-        }
 
         return local;
     }
@@ -56,6 +51,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         this.userRepository.deleteById(userId);
+    }
+
+    @Override
+    public User getUserById(Long userId) {
+       return this.userRepository.findUserById(userId);
     }
 
     //update user by user ID
